@@ -1,0 +1,26 @@
+source_smiles: CC(NC(=O)c1cc2c([nH]c1=O)CC13CCN(CC4CC4)C(Cc4ccc(O)cc41)C3C2)C(N)=O
+source_props: qed=0.5183, plogp=-2.7256, bbbp=0.7182
+
+overall_reward_mean: 1.479708
+overall_reward_max : 1.969161
+
+target_1_smiles: O=C(NC1CCC1)c1cc2c([nH]c1=O)CC13CCN(CC4CC4)C(Cc4ccc(O)cc41)C3C2
+target_1_props: qed=0.6561, plogp=-1.2817, bbbp=0.7969, sim=0.7436
+target_1_scores: bbbp=0.299039, plogp=0.855176, qed=0.819550, sim=0.999819
+target_1_reward: 1.353165
+
+target_2_smiles: O=C(NCCC1CC1)c1cc2c([nH]c1=O)CC13CCN(CC4CC4)C(Cc4ccc(O)cc41)C3C2
+target_2_props: qed=0.6010, plogp=-1.1640, bbbp=0.8345, sim=0.7436
+target_2_scores: bbbp=0.657370, plogp=0.904352, qed=0.333938, sim=0.999819
+target_2_reward: 1.334948
+
+target_3_smiles: NC(=O)c1cc2c([nH]c1=O)CC13CCN(CC4CC4)C(Cc4ccc(O)cc41)C3C2
+target_3_props: qed=0.7259, plogp=-2.1228, bbbp=0.8899, sim=0.7808
+target_3_scores: bbbp=0.946167, plogp=0.169579, qed=0.986669, sim=0.999981
+target_3_reward: 1.261557
+
+target_4_smiles: CCCc1cc2c([nH]c1=O)CC13CCN(CC4CC4)C(Cc4ccc(O)cc41)C3C2
+target_4_props: qed=0.8165, plogp=-0.8199, bbbp=0.9481, sim=0.6582
+target_4_scores: bbbp=0.994500, plogp=0.973993, qed=0.999640, sim=0.970507
+target_4_reward: 1.969161
+

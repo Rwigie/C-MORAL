@@ -1,0 +1,23 @@
+name: bcmq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['bbbp+carc+mutag+qed']
+  rl_task:
+    task: 'bbbp+carc+mutag+qed'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/bcmq
+    runs_dir: Molo/runs/bcmq/grpo
+  wandb:
+    wandb_project: bcmq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/bcmq/gdpo
+    runs_dir: Molo/runs/bcmq/gdpo
+  wandb:
+    wandb_project: bcmq-gdpo

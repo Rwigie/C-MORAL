@@ -1,0 +1,23 @@
+name: cde
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['carc+drd2+herg']
+  rl_task:
+    task: 'carc+drd2+herg'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/cde
+    runs_dir: Molo/runs/cde/grpo
+  wandb:
+    wandb_project: cde
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/cde/gdpo
+    runs_dir: Molo/runs/cde/gdpo
+  wandb:
+    wandb_project: cde-gdpo

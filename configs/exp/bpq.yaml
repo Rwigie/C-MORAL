@@ -1,0 +1,26 @@
+name: bpq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['bbbp+plogp+qed']
+  rl_task:
+    task: 'bbbp+plogp+qed'
+
+grpo_overrides:
+  model:
+    lora_adapter_path: Molo/models/Mistral/gellmo-lora
+  logs:
+    logs_dir: Molo/logs/train/bpq
+    runs_dir: Molo/runs/bpq/grpo
+  wandb:
+    wandb_project: bpq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/bpq/gdpo
+    runs_dir: Molo/runs/bpq/gdpo
+  wandb:
+    wandb_project: bpq-gdpo
+

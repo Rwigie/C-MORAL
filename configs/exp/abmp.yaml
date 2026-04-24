@@ -1,0 +1,23 @@
+name: abmp
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['amp+bbbp+mutag+plogp']
+  rl_task:
+    task: 'amp+bbbp+mutag+plogp'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/abmp
+    runs_dir: Molo/runs/abmp/grpo
+  wandb:
+    wandb_project: abmp
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/abmp/gdpo
+    runs_dir: Molo/runs/abmp/gdpo
+  wandb:
+    wandb_project: abmp-gdpo

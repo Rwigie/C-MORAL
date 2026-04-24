@@ -1,0 +1,77 @@
+model:
+  base_model: "Mistral"
+  base_model_path: "models/Mistral/base"
+  lora_adapter_path: "models/Mistral/gellmoC-lora"
+  best_adapter_dir: "models/Mistral/molo-lora/bpq"
+  use_lora: true
+  device: "cuda"
+  mode: "test" # or "test"
+
+test:
+  num_envs: 5  # "all"
+  num_return_sequences: 20
+  num_beam: 20
+  do_sample: false
+  top_k: 50
+  top_p: 0.95
+  max_new_tokens: 100
+  log_dir: "logs/beam_search"
+  batch_size: 64
+
+env:
+  include_weight_in_prompt: false # Whether to include weights in the prompt
+  include_delta_in_prompt: false # Whether to include deltas in the prompt
+dataset:
+  # Choose one of the following modes:
+  # - "task": for task-specific datasets
+  # - "full": for the full dataset
+  mode: "task" # or "full"
+  tasks: ["plogp+qed"] # requires further modification
+  task_data_path: "data/mumo_by_task"
+  full_data_path: "data/MumoInstruct_arrow"
+  # split: "train" # or "test"
+  eval_ratio: 0.1 # ratio of the dataset to use for evaluation, only used in "task" mode
+
+rl_task:
+  # Which task to optimize for
+  task: "plogp+qed+bbbp" # e.g "plogp+qed" or "hia+plogp+qed+hia+sim"                  
+  use_similarity: true # Whether to use similarity in the reward function
+  reward_mode: "absolute" # or "relative"
+  reward_aggregation: "weighted_sum" # or "max" or "min"
+
+  
+  # Whether to use delta or range for properties
+  use_props_delta: true
+  use_props_range: true
+
+  reward_weight:
+    qed:   0.425
+    plogp: 0.2
+    bbbp:  0.375
+    sim: 0.33
+
+  props_delta:
+    qed: 0.1
+    plogp: 1.0
+    bbbp: 0.1
+
+  props_delta_penalty: # penalty for task delta
+    qed: -0.5
+    plogp: -0.5
+    hia: -0.5
+    bbbp: -0.5
+    mutagenicity: -0.5
+
+  props_range: 
+    sim: [0.6, 1.0]
+    plogp: [1.5, 5.0]
+    bbbp: [0.8, 3.0]
+    qed: [0.9, 3.0]
+  props_range_penalty:
+    sim: -1.0
+    plogp: -1.0
+    bbbp: -1.0
+    qed: -1.0
+
+  reward_scale: 2
+  reward_clip: 1.0

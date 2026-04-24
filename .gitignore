@@ -1,0 +1,64 @@
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ===============================
+# Training / runtime outputs
+# ===============================
+logs/
+runs/
+data/
+data_new/
+wandb/
+
+# ===============================
+# Model weights / checkpoints
+# ===============================
+models/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.h5
+*.safetensors
+*.onnx
+*.pb
+
+# ===============================
+# Private / local-only files
+# ===============================
+admet_server.py
+admet.yml
+requirements-admet.txt
+
+# ===============================
+# Tests / notebooks not for public repo
+# ===============================
+test/
+test_batch/
+test.ipynb
+test_*.py
+*_test.py
+
+# ===============================
+# Slurm / HPC
+# ===============================
+*.out
+*.err
+
+# ===============================
+# OS / IDE
+# ===============================
+.DS_Store
+.vscode/
+.idea/
+
+# ===============================
+# Misc
+# ===============================
+*.tmp
+*.swp

@@ -1,0 +1,23 @@
+name: elq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['herg+liv+qed']
+  rl_task:
+    task: 'herg+liv+qed'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/elq
+    runs_dir: Molo/runs/elq/grpo
+  wandb:
+    wandb_project: elq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/elq/gdpo
+    runs_dir: Molo/runs/elq/gdpo
+  wandb:
+    wandb_project: elq-gdpo

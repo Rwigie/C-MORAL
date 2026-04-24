@@ -1,0 +1,9 @@
+model:
+  base_model: "Mistral"
+  base_model_path: "Molo/models/Mistral/base"
+  lora_adapter_path: "Molo/models/Mistral/gellmoC-lora"
+  best_adapter_dir: "Molo/models/Mistral/molo-lora"
+  use_lora: true
+  device: "cuda"
+  config: "Molo/configs/model_config.yaml"
+  mode: "train" # or "test"

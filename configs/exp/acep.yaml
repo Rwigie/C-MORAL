@@ -1,0 +1,23 @@
+name: acep
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['amp+carc+herg+plogp']
+  rl_task:
+    task: 'amp+carc+herg+plogp'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/acep
+    runs_dir: Molo/runs/acep/grpo
+  wandb:
+    wandb_project: acep
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/acep/gdpo
+    runs_dir: Molo/runs/acep/gdpo
+  wandb:
+    wandb_project: acep-gdpo

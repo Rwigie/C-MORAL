@@ -1,0 +1,23 @@
+name: hlmpq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['hia+liv+mutag+plogp+qed']
+  rl_task:
+    task: 'hia+liv+mutag+plogp+qed'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/hlmpq
+    runs_dir: Molo/runs/hlmpq/grpo
+  wandb:
+    wandb_project: hlmpq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/hlmpq/gdpo
+    runs_dir: Molo/runs/hlmpq/gdpo
+  wandb:
+    wandb_project: hlmpq-gdpo

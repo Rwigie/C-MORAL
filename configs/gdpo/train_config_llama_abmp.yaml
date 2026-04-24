@@ -1,0 +1,169 @@
+include:
+  - model/llama.yaml
+
+dataset:  
+  # Choose one of the following modes:
+  # - "task": for task-specific datasets
+  # - "full": for the full dataset
+  mode: "task" # or "full"
+  tasks: ['amp+bbbp+mutag+plogp'] # list of tasks to include in "task" mode
+  task_data_path: "Molo/data_new/mumo_by_task"
+  full_data_path: "Molo/data_new/MumoInstruct_arrow"
+  # split: "train" # or "test"
+  eval_ratio: 0.1 # ratio of the dataset to use for evaluation, only used in "task" mode
+
+train_env:
+  # Whether to include weights and deltas in the prompt
+  include_weight_in_prompt: false
+  include_delta_in_prompt: false
+  random_sample_in_prompt: false
+
+eval_env:
+  # Whether to include weights and deltas in the prompt
+  include_weight_in_prompt: false
+  include_delta_in_prompt: false
+  random_sample_in_prompt: false
+
+rl_task:
+  # Which task to optimize for
+  task: "amp+bbbp+mutag+plogp" # e.g "plogp+qed" or "hia+plogp+qed+hia+sim"                  
+  use_similarity: true # Whether to use similarity in the reward function
+  reward_mode: "absolute" # or "relative"
+  reward_aggregation: "weighted_sum" # or "max" or "min"
+
+  # Whether to use delta or range for properties
+  use_props_delta: True
+  use_props_range: True
+
+  # for ELQ
+  reward_weight:
+    qed:   1
+    plogp: 1
+    bbbp:  1
+    sim:  1.2
+    liv: 1
+    herg: 1.2
+    carc: 1.2
+    amp: 1
+    mutag: 1
+    hia: 1
+
+  props_delta:
+    qed: 0.1
+    plogp: 1.0
+    bbbp: 0.1
+    drd2: 0.1
+    liv: 0.1
+    herg: 0.2
+    carc: 0.2
+    amp: 0.1
+    mutag: 0.1
+    hia: 0.1
+
+  props_delta_penalty: # penalty for task delta
+    carc: -0.7
+    qed: -0.7
+    bbbp: -0.7
+    drd2: -0.7
+    plogp: -0.7
+    hia: -0.7
+    mutag: -0.7
+    herg: -0.7
+    liv: -0.7
+    amp: -0.7
+
+  props_range: 
+    sim: [0.6, 1.0]
+    plogp: [2.5, 5.0]
+    bbbp: [0.8, 1.0]
+    qed: [0.8, 1.0]
+    herg: [0.0, 0.35]
+    liv: [0.0, 0.4]
+    drd2: [0.4, 1.0]
+    carc: [0.0, 0.2]
+    amp: [0.8, 1.0]
+    mutag: [0.0, 0.2]
+    hia: [0.4, 1.0]
+
+  props_range_penalty:
+    sim: -1.0
+    plogp: -1.0
+    bbbp: -1.0
+    qed: -1.0
+    herg: -1.0
+    liv: -1.0
+    drd2: -1.0
+    carc: -1.0
+    amp: -1.0
+    mutag: -1.0
+    hia: -1.0 
+
+  reward_scale: 2
+  reward_clip: 5.0
+
+training:
+  algorithm: "gdpo" # or "ppo"
+  batch_size: 1
+  num_envs: 64
+  num_return_sequences: 4
+  # batch_size: num_envs * num_return_sequences 
+  num_mini_batch: 8 # number of mini-batches for PPO
+  num_iterations: 301
+  lr_actor: 1.0e-6
+  lr_critic: 1.0e-6
+  use_lr_scheduler: false
+  lr_scheduler_type: "none"
+  warmup_ratio: 0.05
+  min_lr_actor: 1.0e-6
+  min_lr_critic: 1.0e-6
+  value_clip: 1.0
+  train_do_sample: True
+  ppo_epochs: 2
+
+  target_kl: 0.5
+  min_kl_coef: 0.01
+  init_kl_coef: 0.02
+  max_kl_coef: 1.0
+  kl_alpha: 0.2
+  early_stop_kl: 0.75
+
+  joint_update: False
+  critic_loss_coef: 0.5
+  use_sequence_value: True
+  share_backbone: False
+  adv_norm: False
+
+
+eval:
+  eval_num_envs: 128 # "all" for whole dataset
+  eval_num_return_sequences: 1 # normally 1
+  eval_num_beams: 1
+  eval_do_sample: False # for evaluation, we usually don't sample
+
+ppo:
+  clip_eps: 0.2
+  gamma: 0.99
+  lam: 0.95
+  
+generation:
+  temperature: 0.7
+  max_new_tokens: 100
+  top_k: 50
+  top_p: 0.95
+
+logs:
+  checkpoints_dir: "checkpoints"
+  best_adapter_dir: "best_adapter"
+  logs_dir: "Molo/logs/train/abmp/llama/gdpo"
+  runs_dir: "Molo/runs/abmp/llama/gdpo"
+  save_interval: 20
+  log_interval: 1
+  eval_interval: 5
+  logging_backend: "wandb"
+
+wandb:
+  use_wandb: true
+  wandb_project: "llama_abmp"
+  wandb_run_name: null
+  wandb_config:
+    notes: "geometric mean with sigmoid, k = 4 / delta"

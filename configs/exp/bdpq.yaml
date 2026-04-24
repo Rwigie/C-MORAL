@@ -1,0 +1,23 @@
+name: bdpq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['bbbp+drd2+qed+plogp']
+  rl_task:
+    task: 'bbbp+drd2+qed+plogp'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/bdpq
+    runs_dir: Molo/runs/bdpq/grpo
+  wandb:
+    wandb_project: bdpq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/bdpq/gdpo
+    runs_dir: Molo/runs/bdpq/gdpo
+  wandb:
+    wandb_project: bdpq-gdpo

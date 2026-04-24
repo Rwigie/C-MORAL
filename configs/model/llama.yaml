@@ -1,0 +1,8 @@
+model:
+  base_model: "Llama"
+  base_model_path: "models/Llama/base"
+  lora_adapter_path: "models/Llama/gellmoC-lora"
+  best_adapter_dir: "models/Llama/molo-lora"
+  use_lora: true
+  device: "cuda"
+  mode: "train" # or "test"

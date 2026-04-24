@@ -1,0 +1,23 @@
+name: dhmq
+grpo_base: configs/base/grpo_common.yaml
+gdpo_base: configs/base/gdpo_common.yaml
+
+common_overrides:
+  dataset:
+    tasks: ['drd2+hia+mutag+qed']
+  rl_task:
+    task: 'drd2+hia+mutag+qed'
+
+grpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/dhmq
+    runs_dir: Molo/runs/dhmq/grpo
+  wandb:
+    wandb_project: dhmq
+
+gdpo_overrides:
+  logs:
+    logs_dir: Molo/logs/train/dhmq/gdpo
+    runs_dir: Molo/runs/dhmq/gdpo
+  wandb:
+    wandb_project: dhmq-gdpo
