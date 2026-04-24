@@ -3,6 +3,8 @@
 <p align="center">
   <a href="https://github.com/Rwigie/C-MORAL"><img src="https://img.shields.io/badge/GitHub-C--MORAL-181717?logo=github" alt="GitHub"></a>
   <a href="https://huggingface.co/Rwigle/C-MORAL-Mistral-GRPO"><img src="https://img.shields.io/badge/HuggingFace-Mistral--GRPO-FFD21E?logo=huggingface&logoColor=black" alt="Hugging Face"></a>
+  <a href="https://huggingface.co/Rwigle/C-MORAL-Mistral-GDPO"><img src="https://img.shields.io/badge/HuggingFace-Mistral--GDPO-FFB000?logo=huggingface&logoColor=black" alt="Hugging Face GDPO"></a>
+  <a href="https://huggingface.co/datasets/NingLab/C-MuMOInstruct"><img src="https://img.shields.io/badge/Dataset-C--MuMOInstruct-8A2BE2?logo=huggingface&logoColor=white" alt="Dataset"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Models-Mistral%20%7C%20Llama-4A5568" alt="Models">
@@ -52,6 +54,7 @@ The codebase includes:
 Current Hugging Face model repositories:
 
 - [Mistral GRPO Adapters](https://huggingface.co/Rwigle/C-MORAL-Mistral-GRPO)
+- [Mistral GDPO Adapters](https://huggingface.co/Rwigle/C-MORAL-Mistral-GDPO)
 
 Recommended subfolders in the Hugging Face repository follow task aliases:
 
@@ -80,6 +83,14 @@ tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 model = AutoModelForCausalLM.from_pretrained(base_model_id)
 model = PeftModel.from_pretrained(model, adapter_repo, subfolder=task_subfolder)
 ```
+
+## Dataset
+
+Training and evaluation rely on the `C-MuMOInstruct` dataset:
+
+- [NingLab/C-MuMOInstruct](https://huggingface.co/datasets/NingLab/C-MuMOInstruct)
+
+If the configured local dataset cache does not exist, the code will fetch the dataset from Hugging Face and cache it locally.
 
 ## Installation
 
