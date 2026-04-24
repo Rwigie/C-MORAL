@@ -17,7 +17,15 @@ if __package__:
     from .rl.reward import compute_reward
     from .rl.reward_sigmoid import compute_reward_sigmoid
     from .rl.reward_gdpo import compute_reward_gdpo
-    from .utils import load_model_tokenizer, build_datasets, build_test_datasets, load_config, check_lora_weights
+    from .utils import (
+        build_datasets,
+        build_test_datasets,
+        check_lora_weights,
+        load_config,
+        load_model_tokenizer,
+        log_step,
+        print_training_summary,
+    )
     from .rl.env import MoloEnv
     try:
         from .test.test_function import MM_test
@@ -32,7 +40,15 @@ else:
     from rl.reward import compute_reward
     from rl.reward_sigmoid import compute_reward_sigmoid
     from rl.reward_gdpo import compute_reward_gdpo
-    from utils import load_model_tokenizer, build_datasets, build_test_datasets, load_config, check_lora_weights
+    from utils import (
+        build_datasets,
+        build_test_datasets,
+        check_lora_weights,
+        load_config,
+        load_model_tokenizer,
+        log_step,
+        print_training_summary,
+    )
     from rl.env import MoloEnv
     try:
         from test.test_function import MM_test
@@ -88,41 +104,7 @@ def _apply_model_grouped_paths(config, algo: str) -> None:
 
 
 def configuration_plot(config) -> None:
-    dataset_cfg = config.dataset_cfg or {}
-    rl_task_cfg = config.rl_task_cfg or {}
-    training_batch = config.num_envs * config.num_return_sequences
-    mini_batch = training_batch // config.num_mini_batch if config.num_mini_batch else training_batch
-
-    print(
-        "\n"
-        + "=" * 80
-        + "\n"
-        + "🌟 LLM4LigOpt Training Configuration Summary\n"
-        + "=" * 80
-        + "\n"
-        + f"Base Model              : {config.base_model}\n"
-        + f"Model Path              : {config.base_model_path}\n"
-        + f"LoRA Path               : {config.lora_adapter_path}\n"
-        + f"Use LoRA                : {config.use_lora}\n"
-        + f"Dataset Mode            : {dataset_cfg.get('mode', 'full')}\n"
-        + f"Datasets                : {dataset_cfg.get('tasks', 'all')}\n"
-        + f"RL Task                 : {rl_task_cfg.get('task', config.task)}\n"
-        + f"Algorithm               : {config.algorithm}\n"
-        + f"Actor lr                : {config.lr_actor}\n"
-        + f"Init Kl coef            : {config.init_kl_coef}\n"
-        + f"Reward Mode             : {rl_task_cfg.get('reward_mode', 'absolute')}\n"
-        + f"Aggregation             : {rl_task_cfg.get('reward_aggregation', 'mean')}\n"
-        + f"Use Similarity          : {rl_task_cfg.get('use_similarity', True)}\n"
-        + f"Use Props Delta         : {rl_task_cfg.get('use_props_delta', True)}\n"
-        + f"Use Props Range         : {rl_task_cfg.get('use_props_range', True)}\n"
-        + f"num_iterations          : {config.num_iterations}\n"
-        + f"ppo_epochs              : {config.ppo_epochs}\n"
-        + f"batch_size              : {training_batch}\n"
-        + f"num_envs                : {config.num_envs}\n"
-        + f"num_return_sequences    : {config.num_return_sequences}\n"
-        + f"mini_batch_size         : {mini_batch}\n"
-        + "=" * 80
-    )
+    print_training_summary(config, algo="gdpo", config_path=getattr(config, "config_path", None))
 
 def _to_jsonable(obj):
     if isinstance(obj, torch.Tensor):
@@ -228,6 +210,7 @@ def run_test_after_training(config, trainer, admet_model):
 def main():
     args = parse_args()
     config = load_config(args.config)
+    config.config_path = args.config
     _apply_model_grouped_paths(config, algo="gdpo")
     configuration_plot(config)
     reward_cfg = dict(config.reward_cfg or config.rl_task_cfg or {})
@@ -266,7 +249,7 @@ def main():
         builtins.object,
     ]
 
-    print("Loading ADMET model...")
+    log_step("Reward", "Loading ADMET model for molecular property scoring...")
     with torch.serialization.safe_globals(safe_types):
         from admet_ai import ADMETModel
         admet_model = ADMETModel(num_workers=0)
@@ -294,7 +277,7 @@ def main():
 
     # -------------------------------------------------------------- Load Models #
 
-    print("📦 [Model] Loading models and tokenizer...")
+    log_step("Model", f"Loading {config.base_model} actor/ref models and tokenizer...")
     actor_model, tokenizer = load_model_tokenizer(
         base_model=config.base_model,
         base_model_path=config.base_model_path,
@@ -321,17 +304,17 @@ def main():
         max_kl_coef=config.max_kl_coef,
         )
 
-    print("✅ [Model] Models and Tokenizer loaded.")
+    log_step("Model", "Models and tokenizer loaded.")
 
     # ----------------------------------------------------------- Build Envs & Datasets #
 
-    print("📦 [Dataset] Building datasets...")
+    log_step("Dataset", "Building train/eval datasets...")
     train_ds, train_len, val_ds, val_len = build_datasets(config.dataset_cfg)
     dataset_cfg = config.dataset_cfg
     train_env_cfg = config.train_env_cfg
     eval_env_cfg = config.eval_env_cfg
     rl_task_cfg = config.rl_task_cfg
-    print("📦 [Environment] Creating train/eval environments...")
+    log_step("Environment", f"Creating train/eval environments for task={rl_task_cfg['task']}...")
     train_env = MoloEnv(
         dataset=train_ds,
         task=rl_task_cfg["task"],
@@ -354,8 +337,8 @@ def main():
         random_sample=eval_env_cfg.get("random_sample_in_prompt", False),
         device=config.device,
     )
-    print(f"✅ [Environment]['train'] Ready with {train_len} samples.")
-    print(f"✅ [Environment]['eval'] Ready with {val_len} samples.")
+    log_step("Environment", f"train ready with {train_len} samples.")
+    log_step("Environment", f"eval ready with {val_len} samples.")
     buffer = GRPORolloutBuffer(train_env, tokenizer, device=config.device)
     
 

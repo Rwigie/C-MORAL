@@ -8,7 +8,7 @@ Usage:
 
 Examples:
   ./train_batch/launch_rl.sh --algo grpo --task elq
-  ./train_batch/launch_rl.sh --algo gdpo --task bpq --extra "--skip_test_after_train"
+  ./train_batch/launch_rl.sh --algo gdpo --task bpq
   ./train_batch/launch_rl.sh --algo gdpo --task elq --dry-run
 EOF
 }
@@ -69,9 +69,11 @@ export PYTHONPATH="$ROOT_DIR:${PYTHONPATH:-}"
 if [[ "$ALGO" == "grpo" ]]; then
   TRAIN_MODULE="Molo.train_grpo"
   CONFIG_PATH="$PROJECT_DIR/configs/train_config_mistral_${TASK}.yaml"
+  MODEL_NAME="Mistral"
 else
   TRAIN_MODULE="Molo.train_gdpo"
   CONFIG_PATH="$PROJECT_DIR/configs/gdpo/train_config_mistral_${TASK}.yaml"
+  MODEL_NAME="Mistral"
 fi
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
@@ -86,11 +88,20 @@ if [[ -n "$EXTRA_ARGS" ]]; then
   CMD+=("${EXTRA_SPLIT[@]}")
 fi
 
-echo "[INFO] Algo       : $ALGO"
-echo "[INFO] Task       : $TASK"
-echo "[INFO] Config     : $CONFIG_PATH"
-echo "[INFO] Module     : $TRAIN_MODULE"
-echo "[INFO] Command    : ${CMD[*]}"
+LINE="================================================================================================"
+echo
+echo "$LINE"
+echo "C-MORAL batch launch plan"
+echo "$LINE"
+printf "%-16s : %s\n" "Algorithm" "${ALGO^^}"
+printf "%-16s : %s\n" "Model" "$MODEL_NAME"
+printf "%-16s : %s\n" "Task alias" "$TASK"
+printf "%-16s : %s\n" "Config" "$CONFIG_PATH"
+printf "%-16s : %s\n" "Conda env" "molo"
+printf "%-16s : %s\n" "Python module" "$TRAIN_MODULE"
+printf "%-16s : %s\n" "Extra args" "${EXTRA_ARGS:-none}"
+printf "%-16s : %s\n" "Command" "${CMD[*]}"
+echo "$LINE"
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   exit 0
@@ -100,4 +111,3 @@ source /u/rgao7/miniconda3/etc/profile.d/conda.sh
 conda activate molo
 cd "$ROOT_DIR"
 "${CMD[@]}"
-

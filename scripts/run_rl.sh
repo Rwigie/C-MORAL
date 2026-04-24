@@ -5,7 +5,30 @@ usage() {
   cat <<'EOF'
 Usage:
   bash scripts/run_rl.sh --algo <grpo|gdpo> [--task <name> | --exp <name> | --config <path>] [--extra "..."] [--dry-run]
+
+Examples:
+  bash scripts/run_rl.sh --algo grpo --task bpq
+  bash scripts/run_rl.sh --algo gdpo --exp elq
+  bash scripts/run_rl.sh --algo grpo --config configs/train_config_mistral_bpq.yaml --dry-run
 EOF
+}
+
+print_run_plan() {
+  local line="================================================================================================"
+  echo
+  echo "$line"
+  echo "C-MORAL bash launch plan"
+  echo "$line"
+  printf "%-16s : %s\n" "Algorithm" "${ALGO^^}"
+  printf "%-16s : %s\n" "Task" "${TASK:-auto/from-config}"
+  printf "%-16s : %s\n" "Experiment" "${EXP:-none}"
+  printf "%-16s : %s\n" "Config" "${CONFIG:-auto}"
+  printf "%-16s : %s\n" "Extra args" "${EXTRA_ARGS:-none}"
+  printf "%-16s : %s\n" "Conda env" "molo"
+  printf "%-16s : %s\n" "Project dir" "$ROOT"
+  printf "%-16s : %s\n" "Python module" "Molo.train_rl"
+  printf "%-16s : python -m Molo.train_rl %s\n" "Command" "${ARGS[*]}"
+  echo "$line"
 }
 
 ALGO=""
@@ -48,6 +71,8 @@ if [[ -n "$EXTRA_ARGS" ]]; then
   EXTRA_SPLIT=($EXTRA_ARGS)
   ARGS+=("${EXTRA_SPLIT[@]}")
 fi
+
+print_run_plan
 
 source /u/rgao7/miniconda3/etc/profile.d/conda.sh
 conda activate molo

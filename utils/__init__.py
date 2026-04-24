@@ -10,6 +10,7 @@ from .get_unique_dir import get_unique_dir
 from .save_best_adapter import save_best_adapter
 from .config_loader import load_config
 from .utils import check_lora_weights, compute_property_mean, compute_score_mean
+from .run_logging import log_step, print_launcher_banner, print_training_summary
 
 __all__ = [
     "log_metrics",
@@ -28,4 +29,7 @@ __all__ = [
     "save_checkpoint_actor",
     "save_checkpoint_critic",
     'build_test_datasets',
+    "log_step",
+    "print_launcher_banner",
+    "print_training_summary",
 ]

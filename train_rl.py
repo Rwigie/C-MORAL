@@ -1,4 +1,5 @@
 import argparse
+import importlib.util
 import os
 import subprocess
 import sys
@@ -17,11 +18,6 @@ def parse_args():
     parser.add_argument("--task", type=str, default=None, help="Task name, e.g. elq/bpq.")
     parser.add_argument("--config", type=str, default=None, help="Explicit config path.")
     parser.add_argument("--exp", type=str, default=None, help="Experiment config name under configs/exp, e.g. elq.")
-    parser.add_argument(
-        "--skip_test_after_train",
-        action="store_true",
-        help="Pass-through to underlying train script.",
-    )
     parser.add_argument("--dry_run", action="store_true", help="Only print resolved command.")
     return parser.parse_args()
 
@@ -30,9 +26,20 @@ def _repo_root() -> str:
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def _entry_script(repo_root: str, algo: str) -> str:
-    script_name = "train_grpo.py" if algo == "grpo" else "train_gdpo.py"
-    return os.path.join(repo_root, script_name)
+def _load_launcher_logger(repo_root: str):
+    module_path = os.path.join(repo_root, "utils", "run_logging.py")
+    spec = importlib.util.spec_from_file_location("molo_run_logging", module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load run logger: {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.print_launcher_banner
+
+
+def _entry_module(repo_root: str, algo: str) -> str:
+    package_name = os.path.basename(repo_root)
+    module_name = "train_grpo" if algo == "grpo" else "train_gdpo"
+    return f"{package_name}.{module_name}"
 
 
 def _load_yaml(path: str):
@@ -115,6 +122,7 @@ def resolve_config_path(repo_root: str, algo: str, config: str = None, task: str
 def main():
     args = parse_args()
     root = _repo_root()
+    print_launcher_banner = _load_launcher_logger(root)
     config_path = resolve_config_path(
         repo_root=root,
         algo=args.algo,
@@ -124,24 +132,33 @@ def main():
     )
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file not found: {config_path}")
+    is_temp_config = args.exp and os.path.basename(config_path).startswith("molo_merged_")
 
-    entry_script = _entry_script(root, args.algo)
-    cmd = [sys.executable, entry_script, "--config", config_path]
-    if args.skip_test_after_train:
-        cmd.append("--skip_test_after_train")
+    entry_module = _entry_module(root, args.algo)
+    cmd = [sys.executable, "-m", entry_module, "--config", config_path]
 
-    print(f"[RL] algo={args.algo}")
-    print(f"[RL] script={entry_script}")
-    print(f"[RL] config={config_path}")
-    print(f"[RL] command={' '.join(cmd)}")
-
-    if args.dry_run:
-        return
+    config_preview = _load_yaml(config_path) if yaml is not None else None
+    print_launcher_banner(
+        algo=args.algo,
+        config_path=config_path,
+        command=cmd,
+        config=config_preview,
+        script=entry_module,
+        dry_run=args.dry_run,
+    )
 
     try:
-        raise SystemExit(subprocess.call(cmd, cwd=root))
+        if args.dry_run:
+            return
+        env = os.environ.copy()
+        repo_parent = os.path.dirname(root)
+        existing_pythonpath = env.get("PYTHONPATH")
+        env["PYTHONPATH"] = (
+            repo_parent if not existing_pythonpath else os.pathsep.join([repo_parent, existing_pythonpath])
+        )
+        raise SystemExit(subprocess.call(cmd, cwd=repo_parent, env=env))
     finally:
-        if args.exp and os.path.basename(config_path).startswith("molo_merged_") and os.path.exists(config_path):
+        if is_temp_config and os.path.exists(config_path):
             try:
                 os.remove(config_path)
             except OSError:

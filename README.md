@@ -197,6 +197,31 @@ python train_rl.py --algo grpo --config configs/train_config.yaml
 
 ## Training
 
+### Recommended run flow
+
+Start with `--dry_run` to verify the resolved model, algorithm, task, config path, and final Python command before launching GPU training:
+
+```bash
+python train_rl.py --algo grpo --config configs/train_config_mistral_bpq.yaml --dry_run
+python train_rl.py --algo gdpo --config configs/gdpo/train_config_mistral_bpq.yaml --dry_run
+```
+
+Then launch the same command without `--dry_run`:
+
+```bash
+python train_rl.py --algo grpo --config configs/train_config_mistral_bpq.yaml
+```
+
+At startup, the launcher prints a `C-MORAL RL Launch Plan` block with:
+
+- algorithm: `GRPO` or `GDPO`
+- base model: for example `Mistral` or `Llama`
+- task: for example `bbbp+plogp+qed`
+- dataset mode and selected dataset tasks
+- config path, entry module, Python executable, and final command
+
+The training script then prints a `C-MORAL Training Configuration` block with model paths, LoRA settings, reward mode, batch sizes, KL settings, logging backend, `runs_dir`, and `logs_dir`.
+
 ### GRPO
 
 ```bash
@@ -216,18 +241,35 @@ python train_rl.py --algo grpo --exp bpq
 python train_rl.py --algo gdpo --exp bpq
 ```
 
-### Skip post-training test evaluation
+### Bash wrappers
+
+For local shell runs with conda activation and `PYTHONPATH` setup:
 
 ```bash
-python train_rl.py --algo grpo --config configs/train_config_mistral_bpq.yaml --skip_test_after_train
+bash scripts/run_rl.sh --algo grpo --task bpq
+bash scripts/run_rl.sh --algo gdpo --exp elq
+bash scripts/run_rl.sh --algo grpo --config configs/train_config_mistral_bpq.yaml --dry-run
 ```
+
+For batch-style task aliases:
+
+```bash
+./train_batch/launch_rl.sh --algo grpo --task bpq
+./train_batch/launch_rl.sh --algo gdpo --task elq
+./train_batch/launch_rl.sh --algo grpo --task bpq --dry-run
+```
+
+Both wrappers print a bash launch plan before activating the environment, including algorithm, task/config selection, Python module, extra args, and the command that will run.
 
 ## Direct Entrypoints
 
+Prefer `train_rl.py` for normal runs. If you need to call an algorithm entrypoint directly, use module form from the repository parent so package-relative imports resolve correctly:
+
 ```bash
-python train_grpo.py --config configs/train_config_mistral_bpq.yaml
-python train_gdpo.py --config configs/gdpo/train_config_mistral_bpq.yaml
-python train_ppo.py --config configs/train_config.yaml
+cd ..
+python -m Molo.train_grpo --config Molo/configs/train_config_mistral_bpq.yaml
+python -m Molo.train_gdpo --config Molo/configs/gdpo/train_config_mistral_bpq.yaml
+python -m Molo.train_ppo --config Molo/configs/train_config.yaml
 ```
 
 ## Important Config Fields
