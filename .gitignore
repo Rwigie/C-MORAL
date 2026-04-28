@@ -41,13 +41,19 @@ requirements-admet.txt
 # ===============================
 test/
 test_batch/
+*.ipynb
+*.png
+!figs/
+!figs/*.png
 test.ipynb
 test_*.py
 *_test.py
+plot_one_*example*.py
 
 # ===============================
 # Slurm / HPC
 # ===============================
+*.slurm
 *.out
 *.err
 
